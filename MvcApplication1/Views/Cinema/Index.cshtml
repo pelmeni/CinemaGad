@@ -389,7 +389,7 @@
             
         });
 
-        $('#filter_date').val("@DateTime.Now.ToString("yyyy-MM-dd")");
+        $('#filter_date').val("@DateTime.UtcNow.AddHours(ViewBag.TimeZone).ToString("yyyy-MM-dd")");
 
         filterChanged();
 

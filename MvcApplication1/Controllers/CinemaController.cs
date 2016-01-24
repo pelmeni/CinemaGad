@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using CinemaGad.Business;
 using MvcApplication1.Models;
+using MvcApplication1.Properties;
 
 
 namespace MvcApplication1.Controllers
@@ -47,12 +48,14 @@ namespace MvcApplication1.Controllers
             if(start.HasValue)
                 FilterDate = start.Value;
             else
-                FilterDate= FilterDate??DateTime.Now.Date;
+                FilterDate= FilterDate??DateTime.UtcNow.AddHours(Settings.Default.TimeZone).Date;
 
             if (!string.IsNullOrEmpty(text))
                 FilterText = text;
 
             ViewBag.IsEditMode = editMode;
+
+            ViewBag.TimeZone = Settings.Default.TimeZone;
 
             var films = FilmOperations.GetAll().ToDictionary(i => i.film_id, i => i.name);
 

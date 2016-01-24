@@ -5,7 +5,7 @@
 @if ((bool?)ViewBag.IsEditMode == true)
 {
     <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 15px;">
-        <a id="create_new_session" class="btn" onclick="addSessionClick(null, null, '@DateTime.Now.ToString("yyyy-MM-dd")')" data-toggle="tooltip" title="Создать новый сеанс">Создать новый сеанс</a>
+        <a id="create_new_session" class="btn" onclick="addSessionClick(null, null, '@DateTime.UtcNow.AddHours(ViewBag.TimeZone).ToString("yyyy-MM-dd")')" data-toggle="tooltip" title="Создать новый сеанс">Создать новый сеанс</a>
     </div>
         }
         <input type="hidden" id="edit_mode" value="@(((bool) ViewBag.IsEditMode).ToString().ToLower())" />

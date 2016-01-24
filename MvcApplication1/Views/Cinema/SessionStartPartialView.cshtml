@@ -1,6 +1,8 @@
 ﻿@model CinemaGad.Data.session
 
-@if (DateTime.Now > Model.start)
+@*<span>@DateTime.UtcNow.AddHours(ViewBag.TimeZone) > @Model.start</span>*@
+
+@if (DateTime.UtcNow.AddHours(ViewBag.TimeZone) > Model.start)
 {
     <span class="rounded-disabled">@Model.start.ToString("HH:mm")</span>
 }
