@@ -1,0 +1,10 @@
+﻿@model CinemaGad.Data.session
+
+@if (DateTime.Now > Model.start)
+{
+    <span class="rounded-disabled">@Model.start.ToString("HH:mm")</span>
+}
+else
+{
+    <span class="rounded">@Model.start.ToString("HH:mm")</span>
+}

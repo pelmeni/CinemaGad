@@ -1,0 +1,399 @@
+﻿@model MvcApplication1.Models.CinemaFilmSessionsViewModel
+
+@{ViewBag.Title = "Кино Gadukino";}
+
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<!-- Navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Кино Gadukino</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a class="btn" onclick="showIndexPage()">Кинотеатры, фильмы, сеансы </a></li>
+                <li><a class ="btn" onclick="editModeClick()">Режим редактирования</a></li>
+            </ul>
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Добавить сеанс</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <input type="hidden" id="session_id"/>
+
+
+                <div class="input-group-lg">
+                    <span style="padding-bottom: 16px; font-size: 16px; font-weight: bold">Что</span>
+                
+                    <select class="form-control" id="newfilter_film" onchange="validateSession()">
+                        @foreach (var f in Model.Films)
+                        {
+                            <option value="@f.Key">@f.Value</option>
+                        }
+                    </select>
+                </div><!-- /input-group -->
+
+
+                <div class="input-group-lg">
+                    <span style="padding-bottom: 16px; font-size: 16px; font-weight: bold">Где</span>
+                
+                    <select class="form-control" id="newfilter_cinema" onchange="validateSession()">
+                        @foreach (var f in Model.Cinemas)
+                        {
+                            <option value="@f.Key">@f.Value</option>
+                        }
+                    </select>
+                </div><!-- /input-group -->
+
+                <div class="input-group-lg">
+                    <span style="padding-bottom: 16px; font-size: 16px; font-weight: bold">Когда</span>
+                    <input type="date" class="form-control" id="newfilter_date" onchange="validateSession()"/>
+                </div><!-- /input-group -->
+
+                <div class="input-group-lg">
+                    <span style="padding-bottom: 16px; font-size: 16px; font-weight: bold">Время</span>
+                
+                    <input type="time" class="form-control" id="newfilter_time" onchange="validateSession()"/>
+                </div><!-- /input-group -->
+
+
+                <div class="alert alert-warning" role="alert" id="errorMissingReq" hidden>Ошибка. Не все поля заполнены!</div>
+                <div class="alert alert-warning" role="alert" id="errorValidate" hidden>Ошибка. Сеанс с такими параметрами уже есть!</div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+
+
+                <button type="button" class="btn btn-primary" id="editSessionCommand" onclick="updateSessionAndClose()">Сохранить сеанс и закрыть</button>
+                <button type="button" class="btn btn-primary" id="deleteSessionCommand" onclick="deleteSessionAndClose()">Удалить сеанс и закрыть</button>
+                <button type="button" class="btn btn-primary" id="saveSessionCommand" onclick="addSessionAndClose()">Добавить сеанс и закрыть</button>
+                <button type="button" class="btn btn-primary" id="addSessionCommand" onclick="addSession()">Добавить</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Filterbar -->
+<div id="filter_container" style="margin-top: 60px; padding-left: 40px; padding-top: 10px; padding-right: 40px;">
+    <div id="row">
+            <div class="input-group">
+                <span class="input-group-addon">Когда</span>
+
+                            <input id="filter_date" type="text" class="date-picker form-control" />
+                            <label for="filter_date" class="input-group-addon btn">
+                                <span class="glyphicon glyphicon-calendar"></span>
+
+                            </label>
+
+                <span class="input-group-addon">Где</span>
+                <input type="text" class="form-control" id="filter_text" placeholder="Каро" onkeyup="filterChanged()">
+            </div><!-- /input-group -->
+    </div>
+</div>
+
+<div class="alert alert-warning alert-dismissible" role="alert" id="alert_new" hidden>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Внимание!</strong> В режиме редактирования можно создавать <span>новые сеансы</span> и <span>редактировать существующие</span>.
+</div>
+<div class="alert alert-warning alert-dismissible" role="alert" id="alert_new1" hidden>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Внимание!</strong> Для редактирования сеанса нажмите на его время. Для создания сеанса нажмите ссылку <strong>Создать новый сеанс</strong> или <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+</div>
+
+<div id="container" style="padding-left: 40px;">
+
+    @{ Html.RenderPartial("CinemaPartial", Model); }
+
+</div>
+
+<script>
+
+    function validateSession() {
+
+
+        $("#errorMissingReq").hide();
+        $("#errorValidate").hide();
+
+
+        var d = $("#newfilter_date").val();
+        var t = $("#newfilter_time").val();
+        var f = $("#newfilter_film option:selected").val();
+        var c = $("#newfilter_cinema option:selected").val();
+
+        if (d == 'undefined' || t == 'undefined' || f == 'undefined' || c == 'undefined') {
+            $("#errorMissingReq").show();
+        }
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ValidateSession", "Cinema")',
+            data: { start: d, time: t, filmId: f, cinemaId: c },
+            beforeSend: function () {
+
+            },
+            success: function (response) {
+                if (response == "True") {
+                    $("#saveSessionCommand").removeAttr("disabled");
+                    $("#addSessionCommand").removeAttr("disabled");
+                    $("#errorValidate").hide();
+                }
+                else {
+                    $("#saveSessionCommand").attr("disabled", "");
+                    $("#addSessionCommand").attr("disabled", "");
+                    $("#errorValidate").show();
+                }
+            },
+            fail: function (err) {
+                $("#saveSessionCommand").attr("disabled", "");
+                $("#addSessionCommand").attr("disabled", "");
+                $("#errorValidate").show();
+            }
+        });
+
+
+
+    }
+
+    function addSession() {
+
+        saveSession(false);
+
+    }
+    function addSessionAndClose() {
+
+        saveSession(true);
+
+    }
+    function saveSession(closeAfterAdd) {
+
+        var d = $("#newfilter_date").val();
+        var t = $("#newfilter_time").val();
+        var f = $("#newfilter_film option:selected").val();
+        var c = $("#newfilter_cinema option:selected").val();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SaveSession", "Cinema")',
+            data: { start: d, time: t, filmId: f, cinemaId: c }
+        })
+            .fail(function (jqXhr, textStatus, errorThrown) {
+                console.log("fail was called");
+            })
+            .done(function (response) {
+                if (closeAfterAdd)
+                    $('#myModal').modal('hide');
+
+                $("#container").html(response);
+
+                $("#saveSessionCommand").attr("disabled", "");
+                $("#addSessionCommand").attr("disabled", "");
+            })
+            .always(function (dataOrjqXhr, textStatus, jqXhRorErrorThrown) {
+
+            });
+
+    }
+    function updateSessionAndClose() {
+
+        var d = $("#newfilter_date").val();
+        var t = $("#newfilter_time").val();
+        var f = $("#newfilter_film option:selected").val();
+        var c = $("#newfilter_cinema option:selected").val();
+
+        var s = $('#session_id').val();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UpdateSession", "Cinema")',
+            data: { sessionId: s, start: d, time: t, filmId: f, cinemaId: c }
+        })
+            .fail(function (jqXhr, textStatus, errorThrown) {
+                console.log('fail was called');
+            })
+            .done(function (response) {
+
+                $('#myModal').modal('hide');
+
+                $("#container").html(response);
+            })
+            .always(function (dataOrjqXhr, textStatus, jqXhRorErrorThrown) {
+
+            });
+
+    }
+    function deleteSessionAndClose() {
+
+        var s = $('#session_id').val();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteSession", "Cinema")',
+            data: { sessionId: s }
+        })
+            .fail(function (jqXhr, textStatus, errorThrown) {
+                console.log('fail was called');
+            })
+            .done(function (response) {
+                $('#myModal').modal('hide');
+
+                $("#container").html(response);
+
+            })
+            .always(function (dataOrjqXhr, textStatus, jqXhRorErrorThrown) {
+
+            });
+
+    }
+
+    function editSession(sessionId, cinemaId, filmId, start, time) {
+
+        $('#session_id').val(sessionId);
+        $('#newfilter_film').val(filmId);
+        $('#newfilter_cinema').val(cinemaId);
+        $('#newfilter_date').val(start);
+        $('#newfilter_time').val(time);
+
+
+        $("#saveSessionCommand").hide();
+        $("#addSessionCommand").hide();
+        $("#editSessionCommand").show();
+        $("#deleteSessionCommand").show();
+
+        validateSession();
+
+        $('#myModal').modal('show');
+
+    }
+
+    function filterChanged() {
+
+        var d = $("#filter_date").val();
+        var s = $("#filter_text").val();
+
+
+        var editMode = $('#edit_mode').val() == 'true';
+
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("CinemaPartial", "Cinema")',
+            data: { editMode: editMode, start: d, text: s }
+        })
+            .fail(function (jqXhr, textStatus, errorThrown) {
+                console.log('fail was called');
+            })
+            .done(function (response) {
+                $("#container").html(response);
+            })
+            .always(function (dataOrjqXhr, textStatus, jqXhRorErrorThrown) {
+
+            });
+
+    }
+
+    function showIndexPage() {
+
+        filterChanged();
+
+    }
+
+    function editModeClick() {
+
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("EditMode", "Cinema")'
+        })
+            .fail(function (jqXhr, textStatus, errorThrown) {
+                console.log('fail was called');
+            })
+            .done(function (response) {
+                $("#container").html(response);
+
+                $("#alert_new").show();
+
+                $("#alert_new1").show();
+
+                
+            })
+            .always(function (dataOrjqXhr, textStatus, jqXhRorErrorThrown) {
+
+            });
+    }
+
+    function addSessionClick(cinemaId, filmId, d) {
+
+        if (d == undefined)
+            d = $('#filter_date').val();
+
+        if (filmId != null)
+            $('#newfilter_film').val(filmId);
+
+        if (cinemaId != null)
+            $('#newfilter_cinema').val(cinemaId);
+
+
+
+        $('#newfilter_date').val(d);
+        $('#newfilter_time').val("11:00");
+
+
+        $("#saveSessionCommand").show();
+        $("#addSessionCommand").show();
+        $("#editSessionCommand").hide();
+        $("#deleteSessionCommand").hide();
+
+        validateSession();
+
+        $("#myModal").modal('show');
+    }
+
+
+</script>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        $(".date-picker").datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+        
+        $(".date-picker").on("change", function () {
+            filterChanged();
+        });
+
+        $('.navbar-nav li').click(function () {
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+            
+        });
+
+        $('#filter_date').val("@DateTime.Now.ToString("yyyy-MM-dd")");
+
+        filterChanged();
+
+        
+
+    });
+</script>

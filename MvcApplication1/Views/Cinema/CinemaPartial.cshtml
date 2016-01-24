@@ -1,0 +1,71 @@
+﻿@using System.Web.Mvc.Html
+@using CinemaGad.Data
+@model MvcApplication1.Models.CinemaFilmSessionsViewModel
+
+@if ((bool?)ViewBag.IsEditMode == true)
+{
+    <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 15px;">
+        <a id="create_new_session" class="btn" onclick="addSessionClick(null, null, '@DateTime.Now.ToString("yyyy-MM-dd")')" data-toggle="tooltip" title="Создать новый сеанс">Создать новый сеанс</a>
+    </div>
+        }
+        <input type="hidden" id="edit_mode" value="@(((bool) ViewBag.IsEditMode).ToString().ToLower())" />
+        @{
+            foreach (var c in Model.QResult)
+            {
+
+                <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                    <hr />
+                    <div class="col-xs-12 col-md-12">
+
+                        <h1>@(Model.Cinemas[@c.Key])</h1>
+
+                    </div>
+                </div>
+
+                foreach (var f in c.Value)
+                {
+                    <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                        <div class="col-xs-5 col-md-3">
+
+                            <h3>@(Model.Films[@f.Key])</h3>
+
+                        </div>
+                    </div>
+                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                            <div class="col-xs-7 col-md-9">
+
+                                @foreach (var s in f.Value)
+                                {
+                                    if ((bool?)ViewBag.IsEditMode == true)
+                                    {
+                                        <a data-toggle="tooltip" title="Редактировать сеанс" style="cursor: pointer; text-decoration: none" onclick="editSession(@s.session_id, @s.cinema_id, @s.film_id, @(string.Format("'{0}','{1}'",s.start.ToString("yyyy-MM-dd"), s.start.ToString("HH:mm"))))">
+
+                                            @{Html.RenderPartial("SessionStartPartialView", s);}
+
+                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        Html.RenderPartial("SessionStartPartialView", s);
+
+                                                    }
+                                                }
+                                @if ((bool?)ViewBag.IsEditMode == true)
+                                {
+                                    <a style="cursor: pointer; text-decoration: none" onclick="addSessionClick(@c.Key,@f.Key)">
+
+                                        <span class="glyphicon glyphicon-plus" aria-hidden="true" data-toggle="tooltip" title="Добавить новый сеанс"></span>
+
+                                    </a>
+                                }
+
+                            </div>
+                        </div>
+                                                }
+
+                                            }
+
+
+        }
+
+

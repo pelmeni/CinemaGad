@@ -1,0 +1,67 @@
+﻿body {
+}
+/*input[type="date"]::-webkit-clear-button {
+    display: none;
+}*/
+.text-key {
+    float: left;
+    vertical-align: middle;
+    width: 250px;
+}
+.text-value {
+
+}
+
+.text-value input {
+    width: 350px;
+}
+.text-value input[type=checkbox] {
+
+    width: 20px;
+    padding: 0px;
+    margin: 0px;
+
+}
+.text-value textarea {
+    width: 350px;
+}
+
+.nonunderlined {
+    text-decoration: none;
+}
+
+.move-pos-arr {
+    text-align:center;
+    font-size: 1.9em;
+    
+}
+.move-pos-arr a {
+   color: white;
+   font-weight: 900;
+}
+.move-pos-arr a:hover {
+    text-decoration: none;
+}
+
+.label-cap {
+    width: 100px;
+}
+
+.rounded-disabled {
+    background-color: lightgray;
+    border-radius: 4px;
+    border: 1px solid lightgray;
+    font-size: 90%;
+    font-weight: bolder;
+    color: whitesmoke;
+    padding: 4px;
+}
+.rounded {
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid black;
+    font-size: 90%;
+    font-weight: bolder;
+    color: black;
+    padding: 4px;
+}

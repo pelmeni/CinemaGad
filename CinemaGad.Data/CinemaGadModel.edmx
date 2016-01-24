@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="test5Model.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="test5ModelStoreContainer">
+          <EntitySet Name="cinema" EntityType="test5Model.Store.cinema" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="film" EntityType="test5Model.Store.film" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="session" EntityType="test5Model.Store.session" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_session_cinema" Association="test5Model.Store.FK_session_cinema">
+            <End Role="cinema" EntitySet="cinema" />
+            <End Role="session" EntitySet="session" />
+          </AssociationSet>
+          <AssociationSet Name="FK_session_film" Association="test5Model.Store.FK_session_film">
+            <End Role="film" EntitySet="film" />
+            <End Role="session" EntitySet="session" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="cinema">
+          <Key>
+            <PropertyRef Name="cinema_id" />
+          </Key>
+          <Property Name="cinema_id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="nvarchar" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="film">
+          <Key>
+            <PropertyRef Name="film_id" />
+          </Key>
+          <Property Name="film_id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="session">
+          <Key>
+            <PropertyRef Name="session_id" />
+          </Key>
+          <Property Name="session_id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="film_id" Type="int" Nullable="false" />
+          <Property Name="cinema_id" Type="int" Nullable="false" />
+          <Property Name="start" Type="datetime" Nullable="false" />
+          <Property Name="end" Type="datetime" />
+        </EntityType>
+        <Association Name="FK_session_cinema">
+          <End Role="cinema" Type="test5Model.Store.cinema" Multiplicity="1" />
+          <End Role="session" Type="test5Model.Store.session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="cinema">
+              <PropertyRef Name="cinema_id" />
+            </Principal>
+            <Dependent Role="session">
+              <PropertyRef Name="cinema_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_session_film">
+          <End Role="film" Type="test5Model.Store.film" Multiplicity="1" />
+          <End Role="session" Type="test5Model.Store.session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="film">
+              <PropertyRef Name="film_id" />
+            </Principal>
+            <Dependent Role="session">
+              <PropertyRef Name="film_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="test5Model" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="test5Entities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="cinema" EntityType="test5Model.cinema" />
+          <EntitySet Name="film" EntityType="test5Model.film" />
+          <EntitySet Name="session" EntityType="test5Model.session" />
+          <AssociationSet Name="FK_session_cinema" Association="test5Model.FK_session_cinema">
+            <End Role="cinema" EntitySet="cinema" />
+            <End Role="session" EntitySet="session" />
+          </AssociationSet>
+          <AssociationSet Name="FK_session_film" Association="test5Model.FK_session_film">
+            <End Role="film" EntitySet="film" />
+            <End Role="session" EntitySet="session" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="cinema">
+          <Key>
+            <PropertyRef Name="cinema_id" />
+          </Key>
+          <Property Name="cinema_id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="250" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="session" Relationship="test5Model.FK_session_cinema" FromRole="cinema" ToRole="session" />
+        </EntityType>
+        <EntityType Name="film">
+          <Key>
+            <PropertyRef Name="film_id" />
+          </Key>
+          <Property Name="film_id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="session" Relationship="test5Model.FK_session_film" FromRole="film" ToRole="session" />
+        </EntityType>
+        <EntityType Name="session">
+          <Key>
+            <PropertyRef Name="session_id" />
+          </Key>
+          <Property Name="session_id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="film_id" Type="Int32" Nullable="false" />
+          <Property Name="cinema_id" Type="Int32" Nullable="false" />
+          <Property Name="start" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="end" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="cinema" Relationship="test5Model.FK_session_cinema" FromRole="session" ToRole="cinema" />
+          <NavigationProperty Name="film" Relationship="test5Model.FK_session_film" FromRole="session" ToRole="film" />
+        </EntityType>
+        <Association Name="FK_session_cinema">
+          <End Role="cinema" Type="test5Model.cinema" Multiplicity="1" />
+          <End Role="session" Type="test5Model.session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="cinema">
+              <PropertyRef Name="cinema_id" />
+            </Principal>
+            <Dependent Role="session">
+              <PropertyRef Name="cinema_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_session_film">
+          <End Role="film" Type="test5Model.film" Multiplicity="1" />
+          <End Role="session" Type="test5Model.session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="film">
+              <PropertyRef Name="film_id" />
+            </Principal>
+            <Dependent Role="session">
+              <PropertyRef Name="film_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="test5ModelStoreContainer" CdmEntityContainer="test5Entities">
+          <EntitySetMapping Name="cinema">
+            <EntityTypeMapping TypeName="test5Model.cinema">
+              <MappingFragment StoreEntitySet="cinema">
+                <ScalarProperty Name="cinema_id" ColumnName="cinema_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="film">
+            <EntityTypeMapping TypeName="test5Model.film">
+              <MappingFragment StoreEntitySet="film">
+                <ScalarProperty Name="film_id" ColumnName="film_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="session">
+            <EntityTypeMapping TypeName="test5Model.session">
+              <MappingFragment StoreEntitySet="session">
+                <ScalarProperty Name="session_id" ColumnName="session_id" />
+                <ScalarProperty Name="film_id" ColumnName="film_id" />
+                <ScalarProperty Name="cinema_id" ColumnName="cinema_id" />
+                <ScalarProperty Name="start" ColumnName="start" />
+                <ScalarProperty Name="end" ColumnName="end" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
